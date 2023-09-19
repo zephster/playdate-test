@@ -25,8 +25,6 @@ MOVEMENT_STYLES = {
 }
 
 MOVEMENT_STYLE = MOVEMENT_STYLES.Dpad
-
-
 COLLISION_GROUPS = {
     Player = 1,
     Enemy  = 2,
@@ -59,7 +57,7 @@ local function init()
     debugLabel:setCenter(0, 0)
     debugLabel:setCollideRect(0, 0, 250, 20)
     debugLabel:setGroups(COLLISION_GROUPS.Wall)
-    debugLabel:moveTo(20, 20)
+    debugLabel:moveTo(20, 200)
     debugLabel:add()
 
 

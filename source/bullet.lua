@@ -1,6 +1,9 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
-local soundPew = pd.sound.sampleplayer.new("sounds/pew")
+local sound <const> = pd.sound
+local soundPew = sound.sampleplayer.new("sounds/pew")
+local synth = sound.synth.new(sound.kWaveSawtooth)
+synth:setADSR(0, 0.1, 0, 0)
 
 class("Bullet").extends(gfx.sprite)
 
@@ -74,7 +77,10 @@ function Bullet:update()
                 self:remove()
                 break
             elseif otherObject:isa(Enemy) then
+                synth:playNote(200)
                 otherObject:remove()
+                -- todo: lua_release called on object with retainCount == 0
+                Enemy()
                 -- todo: update a score or somethin idk
                 self:remove()
                 break
