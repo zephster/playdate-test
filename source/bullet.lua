@@ -8,10 +8,10 @@ local function isOffScreen(x, y)
     return x > SCREEN_X_MAX or x < SCREEN_X_MIN or y > SCREEN_Y_MAX or y < SCREEN_Y_MIN
 end
 
-function Bullet:init(x, y, angle, speed)
+function Bullet:init(x, y, angle, velocity)
     Bullet.super.init(self)
     self.angle = angle
-    self.speed = BULLET_SPEED
+    self.velocity = velocity
 
     local bulletSize = 4
     local bulletImage = gfx.image.new(bulletSize * 2, bulletSize * 2)
@@ -24,13 +24,26 @@ function Bullet:init(x, y, angle, speed)
 
     -- collision stuff
     self:setCollideRect(0, 0, self:getSize())
-    self:setGroups(COLLISION_GROUPS.Bullet)
+    self.collisionResponse = gfx.sprite.kCollisionTypeBounce
+    -- self:setGroups(COLLISION_GROUPS.Bullet)
     self:setCollidesWithGroups({
         -- COLLISION_GROUPS.Player,
+        COLLISION_GROUPS.Enemy,
         COLLISION_GROUPS.Wall,
     })
 
-    self.speed = speed
+    -- place the bullet just outside of our sprites collision rect
+    -- todo: get the collisionRect of the player sprite and pass that into Bullet() instead of its x,y
+
+
+    -- local radian = math.rad(angle)
+    -- local dx = 20 * math.sin(radian)
+    -- local dy = -20 * math.cos(radian)
+
+    -- Calculate the new x, y position
+    -- local newX = x + dx
+    -- local newY = y + dy
+    -- self:moveTo(newX, newY)
     self:moveTo(x, y)
     self:add()
 
@@ -44,26 +57,29 @@ function Bullet:update()
     end
 
     local radian = math.rad(self.angle)
-    local dx = self.speed * math.sin(radian)
-    local dy = -self.speed * math.cos(radian)
+    local dx = self.velocity * math.sin(radian)
+    local dy = -self.velocity * math.cos(radian)
     local newX = self.x + dx
     local newY = self.y + dy
 
     local actualX, actualY, collisions, length = self:moveWithCollisions(newX, newY)
 
     if length > 0 then
-        -- only bounce if the collision was supposed to
-        for index, collision in ipairs(collisions) do
+        for _, collision in ipairs(collisions) do
             local otherObject = collision['other']
 
-            -- suicide, removes bullet
-            -- todo: issue: bullet starts inside player, so immediately gets popped
-            -- if otherObject:isa(Player) then
-            --     self:remove()
-            --     break
-            -- end
-
-            if collision['type'] == gfx.sprite.kCollisionTypeBounce then
+            -- todo: if i wanna do friendly fire: bullet starts inside player, so immediately gets popped
+            if otherObject:isa(Player) then
+                print("suicided")
+                self:remove()
+                break
+            elseif otherObject:isa(Enemy) then
+                otherObject:remove()
+                -- todo: update a score or somethin idk
+                self:remove()
+                break
+            -- todo: replace with wall class, so all bullets bounce off it
+            elseif collision['type'] == gfx.sprite.kCollisionTypeBounce then
                 -- 90deg cause the surface is horizontal
                 local bounceAngle = 2 * 90 - self.angle
                 self.angle = bounceAngle
@@ -72,14 +88,3 @@ function Bullet:update()
         end
     end
 end
-
-function Bullet:collisionResponse(other)
-    print("bullet collide")
-
-    if other:isa(Bullet) then
-        return gfx.sprite.kCollisionTypeOverlap
-    end
-
-    return gfx.sprite.kCollisionTypeBounce
-end
-

@@ -8,7 +8,7 @@ class("Player").extends(gfx.sprite)
 function Player:init()
     Player.super.init(self)
 
-    local playerImg = gfx.image.new("images/lol")
+    local playerImg = gfx.image.new("images/player")
     assert(playerImg)
     self:setImage(playerImg)
 
@@ -20,6 +20,8 @@ function Player:init()
         -- COLLISION_GROUPS.Bullet,
         COLLISION_GROUPS.Wall
     })
+
+    -- self:setCenter(0.5, 0)
 
     self:moveTo(120, 120)
     self:add()
@@ -72,14 +74,21 @@ function Player:update()
     -- collision stuff
     local actualX, actualY, collisions, length = self:moveWithCollisions(newX, newY)
 
-    -- if length > 0 then
-    --     print("player collision - in update")
-    --     for index, collision in ipairs(collisions) do
-    --         local otherObject = collision['other']
-    --     end
-    -- end
+    if length > 0 then
+        for _, collision in ipairs(collisions) do
+            local other = collision['other']
+
+            -- type check cause that label isnt a class or anything
+            if collision['type'] == gfx.sprite.kCollisionTypeSlide then
+                print("debug label hit")
+            elseif other:isa(Bullet) then
+                print("bullet")
+            end
+        end
+    end
 end
 
 function Player:shoot()
-    Bullet(self.x, self.y, pd.getCrankPosition(), BULLET_SPEED)
+    -- todo: bullet is spawning inside of the player sprite, causes collision shit
+    Bullet(self.x, self.y, pd.getCrankPosition(), BULLET_VELOCITY)
 end

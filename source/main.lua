@@ -4,6 +4,7 @@ import "CoreLibs/sprites"
 -- import "CoreLibs/timer"
 import "CoreLibs/ui"
 
+import "enemy"
 import "bullet"
 import "player"
 import "utils"
@@ -17,18 +18,19 @@ SCREEN_X_MIN = 0
 SCREEN_Y_MAX = 240
 SCREEN_X_MAX = 400
 PLAYER_SPEED = 4
-BULLET_SPEED = PLAYER_SPEED * 4
+BULLET_VELOCITY = PLAYER_SPEED * 4
 MOVEMENT_STYLES = {
     Crank = "crank",
     Dpad = "d-pad"
 }
 
-MOVEMENT_STYLE = MOVEMENT_STYLES.Crank
+MOVEMENT_STYLE = MOVEMENT_STYLES.Dpad
 
 
 COLLISION_GROUPS = {
     Player = 1,
-    Bullet = 2,
+    Enemy  = 2,
+    Bullet = 3,
     Wall   = 32,
 }
 
@@ -49,6 +51,9 @@ local inputHandlers = {
 }
 
 local function init()
+    -- seed rng
+    math.randomseed(playdate.getSecondsSinceEpoch())
+
     debugLabel =gfx.sprite.spriteWithText("input: " .. inputLabel, 300, 300)
     -- debugLabel.collisionResponse = gfx.sprite.kCollisionTypeBounce
     debugLabel:setCenter(0, 0)
@@ -60,24 +65,9 @@ local function init()
 
     pd.ui.crankIndicator:start()
 
-    -- We want an environment displayed behind our sprite.
-    -- There are generally two ways to do this:
-    -- 1) Use setBackgroundDrawingCallback() to draw a background image. (This is what we're doing below.)
-    -- 2) Use a tilemap, assign it to a sprite with sprite:setTilemap(tilemap),
-    --       and call :setZIndex() with some low number so the background stays behind
-    --       your other sprites.
 
-    -- local backgroundImage = gfx.image.new( "Images/background" )
-    -- assert( backgroundImage )
-
-    -- gfx.sprite.setBackgroundDrawingCallback(
-    --     function( x, y, width, height )
-    --         -- x,y,width,height is the updated area in sprite-local coordinates
-    --         -- The clip rect is already set to this area, so we don't need to set it ourselves
-    --         -- backgroundImage:draw( 0, 0 )
-    --         gfx.clear(gfx.kColorWhite)
-    --     end
-    -- )
+    -- spawn an enemy
+    Enemy()
 
 end
 
