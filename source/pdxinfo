@@ -1,0 +1,7 @@
+name=testapp
+author=brandon
+description=just some dude being an idiot
+bundleID=com.zeph.testapp
+version=0.01
+buildNumber=42069
+imagePath=images/
