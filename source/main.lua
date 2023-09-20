@@ -14,30 +14,27 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 
 -- options
-SCREEN_Y_MIN = 0
-SCREEN_X_MIN = 0
-SCREEN_Y_MAX = 240
-SCREEN_X_MAX = 400
-PLAYER_SPEED = 4
-BULLET_VELOCITY = PLAYER_SPEED * 4
 MOVEMENT_STYLES = {
     Crank = "crank",
-    Dpad = "d-pad"
+    Dpad  = "d-pad"
 }
-
-MOVEMENT_STYLE = MOVEMENT_STYLES.Dpad
 COLLISION_GROUPS = {
     Player = 1,
     Enemy  = 2,
     Bullet = 3,
     Wall   = 32,
 }
+SCREEN_Y_MIN               = 0
+SCREEN_X_MIN               = 0
+SCREEN_X_MAX, SCREEN_Y_MAX = pd.display.getSize()
+PLAYER_SPEED               = 4
+BULLET_VELOCITY            = PLAYER_SPEED * 4
+MOVEMENT_STYLE             = MOVEMENT_STYLES.Dpad
 
-local inputLabel = "nowhere"
-local debugLabel = nil
-local playerSprite = Player()
-
-local inputHandlers = {
+local inputLabel           = "nowhere"
+local debugLabel           = nil
+local playerSprite         = Player()
+local defaultInputHandlers =  {
     AButtonDown = function()
         inputLabel = "a"
         playerSprite:shoot()
@@ -62,12 +59,15 @@ local function init()
     debugLabel:add()
 
 
+    pd.inputHandlers.push(defaultInputHandlers)
     pd.ui.crankIndicator:start()
 
+    if not pd.isCrankDocked() then
+        MOVEMENT_STYLE = MOVEMENT_STYLES.Crank
+    end
 
     -- spawn an enemy
     Enemy()
-
 end
 
 init()
@@ -92,14 +92,19 @@ function pd.update()
 
 end
 
-pd.inputHandlers.push(inputHandlers)
-
-
 function pd.debugDraw()
     pd.drawFPS(0, 0)
 end
 
-local menu = pd.getSystemMenu()
-menu:addOptionsMenuItem("mvmt", Utils:enum_values(MOVEMENT_STYLES), MOVEMENT_STYLE, function (value)
-    MOVEMENT_STYLE = value
-end)
+function pd.crankDocked()
+    MOVEMENT_STYLE = MOVEMENT_STYLES.Dpad
+end
+
+function pd.crankUndocked()
+    MOVEMENT_STYLE = MOVEMENT_STYLES.Crank
+end
+
+-- local menu = pd.getSystemMenu()
+-- menu:addOptionsMenuItem("mvmt", Utils:enum_values(MOVEMENT_STYLES), MOVEMENT_STYLE, function (value)
+--     MOVEMENT_STYLE = value
+-- end)

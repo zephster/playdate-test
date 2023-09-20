@@ -80,7 +80,7 @@ function Player:update()
 
             -- type check cause that label isnt a class or anything
             if collision['type'] == gfx.sprite.kCollisionTypeSlide then
-                print("debug label hit")
+                -- print("debug label hit")
             elseif other:isa(Bullet) then
                 print("bullet")
             end
