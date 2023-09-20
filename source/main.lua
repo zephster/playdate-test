@@ -3,6 +3,7 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 -- import "CoreLibs/timer"
 import "CoreLibs/ui"
+import "../toyboxes/toyboxes.lua"
 
 import "enemy"
 import "bullet"
@@ -79,6 +80,7 @@ function pd.update()
     debugLabel:setImage(updatedLabelImage)
 
     gfx.sprite.update()
+    Particles:update()
 
     -- needs to come after sprite.update
     -- https://devforum.play.date/t/docs-mention-that-crankindicator-update-needs-to-be-called-after-sprite-update/12426

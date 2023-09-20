@@ -1,0 +1,8 @@
+{
+    "toyboxes": {
+        "github.com/PossiblyAxolotl/pdParticles": "main"
+    },
+    "installed": {
+        "github.com/PossiblyAxolotl/pdParticles": "main@3cd0a7fdb63d49efa27e959859bf6955117de77a"
+    }
+}

@@ -1,5 +1,8 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
+local sound <const> = pd.sound
+local synth = sound.synth.new(sound.kWaveSawtooth)
+synth:setADSR(0, 0.1, 0, 0)
 
 class("Enemy").extends(gfx.sprite)
 
@@ -23,4 +26,16 @@ function Enemy:init()
     self:moveTo(math.random(SCREEN_X_MIN, SCREEN_X_MAX), math.random(SCREEN_Y_MIN, SCREEN_Y_MAX))
     -- self:moveTo(300, 100)
     self:add()
+end
+
+function Enemy:hit()
+    synth:playNote(200)
+    self:remove()
+
+    local kirby = ParticleCircle(self.x, self.y)
+    kirby:setSize(5, 7)
+    kirby:setSpeed(1, 5)
+    kirby:setMode(Particles.modes.DECAY)
+    kirby:setThickness(0, 3)
+    kirby:add(20)
 end
